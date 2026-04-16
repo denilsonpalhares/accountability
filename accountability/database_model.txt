@@ -31,12 +31,23 @@ Enum journal_status_enum {
   POSTED
 }
 
+Enum relationship_type_enum {
+  REVERSAL
+  RECLASSIFICATION
+}
+
+Enum currency_enum {
+  BRL
+  USD
+  EUR
+}
+
 Table entities {
   id uuid [pk]
   name varchar [not null]
   document varchar [not null, unique]
   entity_type entity_type_enum [not null]
-  currency varchar(3) [not null]
+  currency currency_enum [not null]
   created_at timestamp [not null]
   updated_at timestamp [not null]
 }
@@ -101,6 +112,9 @@ Table journal_entries {
 
   status journal_status_enum [not null]
 
+  related_entry_id uuid [ref: > journal_entries.id]
+  relationship_type relationship_type_enum
+
   created_at timestamp [not null]
   updated_at timestamp [not null]
 }
@@ -111,16 +125,22 @@ Table entry_lines {
 
   account_id uuid [not null, ref: > accounts.id]
 
-  debit numeric(15,2) [default: 0]
-  credit numeric(15,2) [default: 0]
+  amount numeric(15,2) [not null]
+  nature nature_enum [not null]
 
+  original_currency currency_enum
+  original_amount numeric(15,2)
+  
   created_at timestamp [not null]
   updated_at timestamp [not null]
 }
 
 Table entry_line_cost_centers {
-  entry_line_id uuid [pk, ref: > entry_lines.id]
+  id uuid [pk]
+  entry_line_id uuid [not null, ref: > entry_lines.id]
   cost_center_id uuid [not null, ref: > cost_centers.id]
+
+  amount numeric(15,2) [not null]
 }
 
 Table entry_line_quantities {
