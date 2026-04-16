@@ -1,0 +1,143 @@
+Project accounting_system {
+  database_type: "PostgreSQL"
+}
+
+Enum entity_type_enum {
+  PF
+  PJ
+}
+
+Enum account_type_enum {
+  ASSET
+  LIABILITY
+  EQUITY
+  REVENUE
+  EXPENSE
+}
+
+Enum nature_enum {
+  DEBIT
+  CREDIT
+}
+
+Enum mode_enum {
+  NONE
+  OPTIONAL
+  REQUIRED
+}
+
+Enum journal_status_enum {
+  DRAFT
+  POSTED
+}
+
+Table entities {
+  id uuid [pk]
+  name varchar [not null]
+  document varchar [not null, unique]
+  entity_type entity_type_enum [not null]
+  currency varchar(3) [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table cost_centers {
+  id uuid [pk]
+  entity_id uuid [not null, ref: > entities.id]
+  parent_id uuid [ref: > cost_centers.id]
+
+  code varchar [not null]
+  name varchar [not null]
+  description varchar
+  is_active boolean [not null, default: true]
+
+  started_at date
+  finished_at date
+
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  indexes {
+    (entity_id, code) [unique]
+  }
+}
+
+Table accounts {
+  id uuid [pk]
+  entity_id uuid [not null, ref: > entities.id]
+  parent_id uuid [ref: > accounts.id]
+
+  code varchar [not null]
+  name varchar [not null]
+
+  account_type account_type_enum [not null]
+  nature nature_enum [not null]
+
+  is_analytic boolean [not null]
+
+  quantity_mode mode_enum [not null]
+  quantity_label varchar
+  quantity_unit varchar
+  decimal_places int
+
+  due_mode mode_enum [not null]
+  cost_center_mode mode_enum [not null]
+
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+
+  indexes {
+    (entity_id, code) [unique]
+  }
+}
+
+Table journal_entries {
+  id uuid [pk]
+  entity_id uuid [not null, ref: > entities.id]
+
+  date date [not null]
+  description varchar [not null]
+  reference varchar
+
+  status journal_status_enum [not null]
+
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table entry_lines {
+  id uuid [pk]
+  journal_entry_id uuid [not null, ref: > journal_entries.id]
+
+  account_id uuid [not null, ref: > accounts.id]
+
+  debit numeric(15,2) [default: 0]
+  credit numeric(15,2) [default: 0]
+
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table entry_line_cost_centers {
+  entry_line_id uuid [pk, ref: > entry_lines.id]
+  cost_center_id uuid [not null, ref: > cost_centers.id]
+}
+
+Table entry_line_quantities {
+  id uuid [pk]
+  entry_line_id uuid [not null, ref: > entry_lines.id]
+
+  quantity numeric(18,6) [not null]
+  unit_type varchar [not null]
+}
+
+Table entry_line_due_dates {
+  id uuid [pk]
+  entry_line_id uuid [not null, ref: > entry_lines.id]
+
+  due_date date [not null]
+  amount numeric(15,2)
+}
+
+
+
