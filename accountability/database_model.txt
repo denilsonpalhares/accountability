@@ -20,11 +20,7 @@ Enum nature_enum {
   CREDIT
 }
 
-Enum mode_enum {
-  NONE
-  OPTIONAL
-  REQUIRED
-}
+
 
 Enum journal_status_enum {
   DRAFT
@@ -98,7 +94,7 @@ Table accounts {
 
 Table account_quantity_settings {
   account_id uuid [pk, ref: > accounts.id]
-  quantity_mode mode_enum [not null]
+  is_required boolean [not null, default: false]
   quantity_label varchar
   quantity_unit varchar
   decimal_places int
@@ -106,12 +102,12 @@ Table account_quantity_settings {
 
 Table account_due_settings {
   account_id uuid [pk, ref: > accounts.id]
-  due_mode mode_enum [not null]
+  is_required boolean [not null, default: false]
 }
 
 Table account_cost_center_settings {
   account_id uuid [pk, ref: > accounts.id]
-  cost_center_mode mode_enum [not null]
+  is_required boolean [not null, default: false]
 }
 
 Table journal_entries {
@@ -133,6 +129,10 @@ Table journal_entry_relationships {
   journal_entry_id uuid [not null, ref: > journal_entries.id]
   related_entry_id uuid [not null, ref: > journal_entries.id]
   relationship_type relationship_type_enum [not null]
+
+  indexes {
+    (journal_entry_id, related_entry_id) [unique]
+  }
 }
 
 Table entry_lines {
@@ -160,7 +160,11 @@ Table entry_line_cost_centers {
   entry_line_id uuid [not null, ref: > entry_lines.id]
   cost_center_id uuid [not null, ref: > cost_centers.id]
 
-  amount numeric(15,2) [not null]
+  value integer [not null]
+
+  indexes {
+    (entry_line_id, cost_center_id) [unique]
+  }
 }
 
 Table entry_line_quantities {
@@ -176,7 +180,6 @@ Table entry_line_due_dates {
   entry_line_id uuid [not null, ref: > entry_lines.id]
 
   due_date date [not null]
-  amount numeric(15,2)
 }
 
 

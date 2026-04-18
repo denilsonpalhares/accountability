@@ -21,3 +21,9 @@
 - [x] normalizar relationships para que apenas exista se houver o relacionamento.
 
 - [x] normalizar original_amount de forma a apenas existir se for um lançamento em moeda estrangeira.
+
+- [x] Corrigir violação de normalização: padronizar quantias financeiras (amount) para integer nas tabelas relacionais auxiliares.
+
+- [x] Limpeza do Enum mode_enum: substituição por atributos \`is_required\` lógicos dentro das tabelas filhas.
+
+- [x] Adicionar restrições Unique (Índices unificados) nas tabelas join (journal_entry_relationships e entry_line_cost_centers) para evitar duplicação.

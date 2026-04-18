@@ -4,7 +4,8 @@ Você é um desenvolvedor com conhecimento amplo em ruby, sql, rails, e contabil
 #Objetivo
 Criar um sistema de contabilidade pessoal que seja capaz de registrar o patrimônio de uma entidade.
 
-
+#Checagens
+Cada alteração deve ser registrada no arquivo history.md
 
 #Requisitos
 Todos os valores financeiros devem ser do tipo inteiro
