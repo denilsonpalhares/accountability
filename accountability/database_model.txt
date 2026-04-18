@@ -86,13 +86,7 @@ Table accounts {
 
   is_analytic boolean [not null]
 
-  quantity_mode mode_enum [not null]
-  quantity_label varchar
-  quantity_unit varchar
-  decimal_places int
 
-  due_mode mode_enum [not null]
-  cost_center_mode mode_enum [not null]
 
   created_at timestamp [not null]
   updated_at timestamp [not null]
@@ -100,6 +94,24 @@ Table accounts {
   indexes {
     (entity_id, code) [unique]
   }
+}
+
+Table account_quantity_settings {
+  account_id uuid [pk, ref: > accounts.id]
+  quantity_mode mode_enum [not null]
+  quantity_label varchar
+  quantity_unit varchar
+  decimal_places int
+}
+
+Table account_due_settings {
+  account_id uuid [pk, ref: > accounts.id]
+  due_mode mode_enum [not null]
+}
+
+Table account_cost_center_settings {
+  account_id uuid [pk, ref: > accounts.id]
+  cost_center_mode mode_enum [not null]
 }
 
 Table journal_entries {
@@ -112,11 +124,15 @@ Table journal_entries {
 
   status journal_status_enum [not null]
 
-  related_entry_id uuid [ref: > journal_entries.id]
-  relationship_type relationship_type_enum
-
   created_at timestamp [not null]
   updated_at timestamp [not null]
+}
+
+Table journal_entry_relationships {
+  id uuid [pk]
+  journal_entry_id uuid [not null, ref: > journal_entries.id]
+  related_entry_id uuid [not null, ref: > journal_entries.id]
+  relationship_type relationship_type_enum [not null]
 }
 
 Table entry_lines {
@@ -125,14 +141,18 @@ Table entry_lines {
 
   account_id uuid [not null, ref: > accounts.id]
 
-  amount numeric(15,2) [not null]
+  value integer [not null]
   nature nature_enum [not null]
 
-  original_currency currency_enum
-  original_amount numeric(15,2)
-  
   created_at timestamp [not null]
   updated_at timestamp [not null]
+}
+
+Table entry_line_currencies {
+  id uuid [pk]
+  entry_line_id uuid [not null, ref: > entry_lines.id]
+  currency currency_enum [not null]
+  amount integer [not null]
 }
 
 Table entry_line_cost_centers {
