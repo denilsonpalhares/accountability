@@ -24,6 +24,10 @@
 
 - [x] Corrigir violação de normalização: padronizar quantias financeiras (amount) para integer nas tabelas relacionais auxiliares.
 
-- [x] Limpeza do Enum mode_enum: substituição por atributos \`is_required\` lógicos dentro das tabelas filhas.
+- [x] Limpeza do Enum mode_enum: substituição por atributos `is_required` lógicos dentro das tabelas filhas.
 
 - [x] Adicionar restrições Unique (Índices unificados) nas tabelas join (journal_entry_relationships e entry_line_cost_centers) para evitar duplicação.
+
+- [x] Geração das Migrations (Rails): Traduzir o esquema de `database_model.txt` (DBML) para arquivos de migração do ActiveRecord no Rails.
+
+- [x] Criação dos Models (ActiveRecord): Implementação de 13 classes de modelo com associações, enums e validações básicas.

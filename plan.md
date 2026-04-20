@@ -28,11 +28,11 @@ O design inicial da base de dados e a sua modelagem já foram concluídos e vali
 
 Como o objetivo é desenvolver um sistema utilizando **Ruby on Rails 8** e **PostgreSQL**, os próximos passos devem focar em traduzir o modelo teórico para o ecossistema Rails e implementar a lógica de negócio:
 
-- [ ] **1. Geração das Migrations (Rails):**
+- [x] **1. Geração das Migrations (Rails):**
   - Traduzir o esquema de `database_model.txt` (DBML) para arquivos de migração do ActiveRecord no Rails.
   - Configurar as chaves estrangeiras, índices e constraints de banco de dados (ex: UUIDs, *null constraints*).
 
-- [ ] **2. Criação dos Models (ActiveRecord):**
+- [x] **2. Criação dos Models (ActiveRecord):**
   - Criar as classes de modelo (Entity, CostCenter, Account, JournalEntry, EntryLine, etc.).
   - Configurar os relacionamentos (`has_many`, `belongs_to`, `has_one`).
   - Implementar os `enums` definidos (nature, account_type, journal_status, etc.).
