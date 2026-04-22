@@ -19,6 +19,7 @@ class Account < ApplicationRecord
   enum :nature, { DEBIT: "DEBIT", CREDIT: "CREDIT" }
 
   validates :code, presence: true, uniqueness: { scope: :entity_id }
+  validates :alias, uniqueness: { scope: :entity_id, allow_blank: true }
   validates :name, presence: true
   validates :account_type, presence: true
   validates :nature, presence: true

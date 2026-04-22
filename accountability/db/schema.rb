@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_20_025225) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_22_170856) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -44,6 +44,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_20_025225) do
 
   create_table "accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.enum "account_type", null: false, enum_type: "account_type_enum"
+    t.string "alias"
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.uuid "entity_id", null: false
@@ -52,6 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_20_025225) do
     t.enum "nature", null: false, enum_type: "nature_enum"
     t.uuid "parent_id"
     t.datetime "updated_at", null: false
+    t.index ["entity_id", "alias"], name: "index_accounts_on_entity_id_and_alias", unique: true
     t.index ["entity_id", "code"], name: "index_accounts_on_entity_id_and_code", unique: true
     t.index ["entity_id"], name: "index_accounts_on_entity_id"
     t.index ["parent_id"], name: "index_accounts_on_parent_id"
