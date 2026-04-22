@@ -11,4 +11,9 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  resources :reports, only: [] do
+    collection do
+      get :income_statement
+    end
+  end
 end

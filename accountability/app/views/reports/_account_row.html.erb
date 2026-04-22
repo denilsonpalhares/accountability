@@ -1,0 +1,33 @@
+<%
+  row_class = case
+    when account[:alias]&.include?('sicoob') then 'row-sicoob'
+    when account[:alias]&.include?('nubank') then 'row-nubank'
+    else ''
+  end
+  row_class += account[:is_analytic] ? ' analytic-row' : ' synthetic-row'
+%>
+
+<tr class="<%= row_class %>">
+  <td style="padding-left: <%= level * 20 %>px; white-space: nowrap;">
+    <span class="account-code"><%= account[:code] %></span> <%= account[:name] %>
+  </td>
+  <% (1..12).each do |month| %>
+    <td class="text-right">
+      <% val = account[:balances][month] %>
+      <% if val != 0 %>
+        <span class="<%= val > 0 ? 'pos-val' : 'neg-val' %>">
+          <%= number_with_precision(val.abs / 100.0, precision: 2, separator: ",", delimiter: ".") %>
+        </span>
+      <% else %>
+        <span class="text-muted opacity-50">-</span>
+      <% end %>
+    </td>
+  <% end %>
+  <td class="text-right font-weight-bold total-col">
+    <%= number_to_currency(account[:total] / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %>
+  </td>
+</tr>
+
+<% account[:children].each do |child| %>
+  <%= render 'account_row', account: child, level: level + 1 %>
+<% end %>

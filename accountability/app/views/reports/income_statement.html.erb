@@ -1,0 +1,199 @@
+<%
+  month_names = %w[Jan Fev Mar Abr Mai Jun Jul Ago Set Out Nov Dez]
+  def header_row(month_names)
+    content_tag(:tr, class: "month-header-row") do
+      concat content_tag(:th, "Conta", class: "sticky-col")
+      month_names.each { |m| concat content_tag(:th, m, class: "text-right") }
+      concat content_tag(:th, "Total", class: "text-right")
+    end
+  end
+%>
+
+<div class="container-fluid premium-report mt-4">
+  <div class="card shadow-lg border-0">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+      <div>
+        <h1 class="h3 mb-0">Relatório Financeiro Unificado</h1>
+        <p class="mb-0 opacity-75"><%= @entity.name %> | Exercício <%= @year %></p>
+      </div>
+      <div class="brand-badges">
+        <span class="badge badge-sicoob">SICOOB</span>
+        <span class="badge badge-nubank">NUBANK</span>
+      </div>
+    </div>
+    
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+          <tbody>
+            <%# --- ATIVO --- %>
+            <tr class="section-header">
+              <td colspan="14"><strong>1. ATIVO</strong></td>
+            </tr>
+            <%= header_row(month_names) %>
+            <%= render 'account_row', account: @report[:ativo], level: 0 %>
+
+            <%# --- PASSIVO --- %>
+            <tr class="section-header mt-4">
+              <td colspan="14"><strong>2. PASSIVO</strong></td>
+            </tr>
+            <%= header_row(month_names) %>
+            <%= render 'account_row', account: @report[:passivo], level: 0 %>
+
+            <%# --- RECEITAS --- %>
+            <tr class="section-header">
+              <td colspan="14"><strong>3. RECEITAS</strong></td>
+            </tr>
+            <%= header_row(month_names) %>
+            <%= render 'account_row', account: @report[:revenue], level: 0 %>
+
+            <%# --- DESPESAS --- %>
+            <tr class="section-header">
+              <td colspan="14"><strong>4. DESPESAS</strong></td>
+            </tr>
+            <%= header_row(month_names) %>
+            <%= render 'account_row', account: @report[:expense], level: 0 %>
+
+            <%# --- SUMMARIES --- %>
+            <tr class="section-header bg-gold">
+              <td colspan="14"><strong>5. INDICADORES DE RESULTADO</strong></td>
+            </tr>
+            <%= header_row(month_names) %>
+            
+            <%# Resultado Liquido %>
+            <tr class="summary-row font-weight-bold">
+              <td class="sticky-col">Resultado Líquido</td>
+              <% (1..12).each do |m| %>
+                <td class="text-right">
+                  <% val = @report[:summaries][:resultado_liquido][:balances][m] %>
+                  <span class="<%= val >= 0 ? 'text-success' : 'text-danger' %>">
+                    <%= number_with_precision(val / 100.0, precision: 2) if val != 0 %>
+                  </span>
+                </td>
+              <% end %>
+              <td class="text-right">
+                <%= number_to_currency(@report[:summaries][:resultado_liquido][:total] / 100.0, unit: "R$ ") %>
+              </td>
+            </tr>
+
+            <%# Lucro Antes IR %>
+            <tr class="summary-row">
+              <td class="sticky-col">Lucro antes de I.R.</td>
+              <% (1..12).each do |m| %>
+                <td class="text-right"><%= number_with_precision(@report[:summaries][:lucro_antes_ir][:balances][m] / 100.0, precision: 2) if @report[:summaries][:lucro_antes_ir][:balances][m] != 0 %></td>
+              <% end %>
+              <td class="text-right"><%= number_to_currency(@report[:summaries][:lucro_antes_ir][:total] / 100.0, unit: "R$ ") %></td>
+            </tr>
+
+            <%# Lucro Liquido %>
+            <tr class="summary-row highlight-result">
+              <td class="sticky-col">Lucro Líquido</td>
+              <% (1..12).each do |m| %>
+                <td class="text-right"><%= number_with_precision(@report[:summaries][:lucro_liquido][:balances][m] / 100.0, precision: 2) if @report[:summaries][:lucro_liquido][:balances][m] != 0 %></td>
+              <% end %>
+              <td class="text-right"><%= number_to_currency(@report[:summaries][:lucro_liquido][:total] / 100.0, unit: "R$ ") %></td>
+            </tr>
+
+            <%# Fluxo de Caixa %>
+            <tr class="summary-row bg-light">
+              <td class="sticky-col">Fluxo de Caixa (Var. Disponível)</td>
+              <% (1..12).each do |m| %>
+                <td class="text-right">
+                  <% val = @report[:summaries][:fluxo_caixa][:balances][m] %>
+                  <span class="<%= val >= 0 ? 'text-info' : 'text-warning' %>">
+                    <%= number_with_precision(val / 100.0, precision: 2) if val != 0 %>
+                  </span>
+                </td>
+              <% end %>
+              <td class="text-right"><%= number_to_currency(@report[:summaries][:fluxo_caixa][:total] / 100.0, unit: "R$ ") %></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+  .premium-report {
+    font-family: 'Inter', sans-serif;
+    color: #1a1a1a;
+  }
+
+  .section-header {
+    background-color: #f1f3f5;
+    color: #495057;
+    font-size: 1.1rem;
+    border-top: 2px solid #dee2e6;
+  }
+
+  .month-header-row {
+    background-color: #343a40;
+    color: white;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .table td, .table th {
+    vertical-align: middle;
+    border-color: #f1f3f5;
+  }
+
+  .synthetic-row {
+    font-weight: 600;
+    background-color: #fcfcfc;
+  }
+
+  .analytic-row {
+    font-size: 0.9rem;
+  }
+
+  .account-code {
+    color: #adb5bd;
+    font-size: 0.8rem;
+    margin-right: 5px;
+  }
+
+  /* Branding */
+  .row-sicoob {
+    border-left: 5px solid #003641;
+    background-color: rgba(0, 54, 65, 0.03) !important;
+  }
+  .row-sicoob:hover { background-color: rgba(0, 54, 65, 0.08) !important; }
+  
+  .row-nubank {
+    border-left: 5px solid #820AD1;
+    background-color: rgba(130, 10, 209, 0.03) !important;
+  }
+  .row-nubank:hover { background-color: rgba(130, 10, 209, 0.08) !important; }
+
+  .badge-sicoob { background-color: #003641; color: #C5D400; padding: 5px 10px; }
+  .badge-nubank { background-color: #820AD1; color: white; padding: 5px 10px; }
+
+  .summary-row { font-size: 1rem; border-top: 2px solid #343a40; }
+  .highlight-result { background-color: #e9ecef; }
+  .bg-gold { background-color: #fff9db !important; }
+
+  .text-success { color: #2b8a3e !important; }
+  .text-danger { color: #c92a2a !important; }
+  .text-info { color: #1864ab !important; }
+
+  .sticky-col {
+    position: sticky;
+    left: 0;
+    background-color: inherit;
+    z-index: 10;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  }
+
+  .table-responsive {
+    max-height: 80vh;
+  }
+
+  .total-col {
+    background-color: #f8f9fa;
+  }
+</style>
