@@ -9,7 +9,12 @@
 
 <tr class="<%= row_class %>">
   <td style="padding-left: <%= level * 20 %>px; white-space: nowrap;">
-    <span class="account-code"><%= account[:code] %></span> <%= account[:name] %>
+    <span class="account-code"><%= account[:code] %></span>
+    <% if account[:is_analytic] %>
+      <%= link_to account[:name], account_details_report_path(account[:id]), class: "account-link" %>
+    <% else %>
+      <%= account[:name] %>
+    <% end %>
   </td>
   <% (1..12).each do |month| %>
     <td class="text-right">

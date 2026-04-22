@@ -15,5 +15,8 @@ Rails.application.routes.draw do
     collection do
       get :income_statement
     end
+    member do
+      get :account_details
+    end
   end
 end

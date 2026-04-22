@@ -1,0 +1,87 @@
+<%
+  brand_class = case
+    when @account.alias&.include?('sicoob') then 'header-sicoob'
+    when @account.alias&.include?('nubank') then 'header-nubank'
+    else 'bg-dark'
+  end
+%>
+
+<div class="container mt-4 premium-report">
+  <div class="mb-3">
+    <%= link_to "← Voltar para o DR", income_statement_reports_path, class: "btn btn-outline-secondary btn-sm" %>
+  </div>
+
+  <div class="card shadow-lg border-0">
+    <div class="card-header <%= brand_class %> text-white py-3">
+      <h2 class="h4 mb-0">Razão Detalhado: <%= @account.name %></h2>
+      <p class="mb-0 opacity-75">Código: <%= @account.code %> | Tipo: <%= @account.account_type %> | Natureza: <%= @account.nature %></p>
+    </div>
+    
+    <div class="card-body p-0">
+      <table class="table table-hover mb-0">
+        <thead class="thead-light">
+          <tr>
+            <th style="width: 120px;">Data</th>
+            <th>Histórico</th>
+            <th class="text-center" style="width: 80px;">Nat</th>
+            <th class="text-right" style="width: 150px;">Valor</th>
+            <th class="text-right" style="width: 180px;">Saldo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @history.empty? %>
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted">Nenhum lançamento encontrado para esta conta.</td>
+            </tr>
+          <% else %>
+            <% @history.each do |entry| %>
+              <tr>
+                <td class="font-weight-bold"><%= l entry[:date] %></td>
+                <td><%= entry[:description] %></td>
+                <td class="text-center">
+                  <span class="badge <%= entry[:nature] == 'DEBIT' ? 'badge-debit' : 'badge-credit' %>">
+                    <%= entry[:nature][0] %>
+                  </span>
+                </td>
+                <td class="text-right">
+                  <%= number_to_currency(entry[:value] / 100.0, unit: "", separator: ",", delimiter: ".") %>
+                </td>
+                <td class="text-right font-weight-bold <%= entry[:balance] >= 0 ? 'text-success' : 'text-danger' %>">
+                  <%= number_to_currency(entry[:balance] / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %>
+                </td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+        <tfoot>
+          <tr class="table-active">
+            <td colspan="4" class="text-right"><strong>SALDO FINAL</strong></td>
+            <td class="text-right font-weight-bold <%= @running_balance >= 0 ? 'text-success' : 'text-danger' %>">
+              <%= number_to_currency(@running_balance / 100.0, unit: "R$ ", separator: ",", delimiter: ".") %>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+  .premium-report {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .header-sicoob { background-color: #003641; }
+  .header-nubank { background-color: #820AD1; }
+
+  .badge-debit { background-color: #e7f5ff; color: #1864ab; }
+  .badge-credit { background-color: #fff4e6; color: #d9480f; }
+
+  .text-success { color: #2b8a3e !important; }
+  .text-danger { color: #c92a2a !important; }
+  
+  .table td, .table th { padding: 12px 15px; border-color: #f1f3f5; }
+  .thead-light th { background-color: #f8f9fa; color: #495057; border-bottom: 2px solid #dee2e6; }
+</style>
