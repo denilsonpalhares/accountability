@@ -1,0 +1,31 @@
+# Configuração de vínculo entre arquivos PDF e contas contábeis
+# Este arquivo define como os arquivos na pasta data/ devem ser processados.
+
+mappings:
+  - pattern: "sicoob_*.pdf"
+    account_alias: "sicoob"
+    description: "Extrato Bancário Sicoob"
+    # Define como interpretar os valores do PDF:
+    # Em uma conta de ATIVO (como sicoob):
+    # - Valores que aumentam o saldo (depósitos, recebimentos) são DÉBITO.
+    # - Valores que diminuem o saldo (pagamentos, transferências) são CRÉDITO.
+    rules:
+      positive_is: "DEBIT"
+      negative_is: "CREDIT"
+
+  - pattern: "cartaosicoob_*.pdf"
+    account_alias: "cartao_sicoob"
+    description: "Fatura de Cartão de Crédito Sicoob"
+    # Em uma conta de PASSIVO (como cartao_sicoob):
+    # - Valores que aumentam a dívida (compras) são CRÉDITO.
+    # - Valores que diminuem a dívida (pagamentos da fatura) são DÉBITO.
+    rules:
+      purchase_is: "CREDIT"
+      payment_is: "DEBIT"
+
+  - pattern: "nubank_*.pdf"
+    account_alias: "nubank"
+    description: "Extrato Bancário Nubank"
+    rules:
+      positive_is: "DEBIT"
+      negative_is: "CREDIT"

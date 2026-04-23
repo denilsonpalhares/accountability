@@ -34,8 +34,20 @@
               <td colspan="5" class="text-center py-5 text-muted">Nenhum lançamento encontrado para esta conta.</td>
             </tr>
           <% else %>
+            <% 
+              current_month = nil 
+              month_toggle = false
+            %>
             <% @history.each do |entry| %>
-              <tr>
+              <% 
+                month_key = entry[:date].strftime('%Y-%m')
+                if month_key != current_month
+                  current_month = month_key
+                  month_toggle = !month_toggle
+                end
+                month_class = month_toggle ? 'month-green-1' : 'month-green-2'
+              %>
+              <tr class="<%= month_class %>">
                 <td class="font-weight-bold"><%= l entry[:date] %></td>
                 <td><%= entry[:description] %></td>
                 <td class="text-center">
@@ -84,4 +96,11 @@
   
   .table td, .table th { padding: 12px 15px; border-color: #f1f3f5; }
   .thead-light th { background-color: #f8f9fa; color: #495057; border-bottom: 2px solid #dee2e6; }
+
+  /* Zebra striping by month - More visible green tones */
+  .month-green-1 { background-color: #f0fdf4; } /* Lighter green */
+  .month-green-2 { background-color: #dcfce7; } /* More visible green */
+  
+  .table-hover tbody tr.month-green-1:hover { background-color: #dcfce7; }
+  .table-hover tbody tr.month-green-2:hover { background-color: #bbf7d0; }
 </style>

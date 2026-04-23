@@ -114,8 +114,132 @@
   </div>
 </div>
 
+<!-- Chart Modal -->
+<div id="chartModal" class="modal-backdrop" style="display: none;">
+  <div class="modal-content-custom">
+    <div class="modal-header-custom">
+      <h3 id="modalTitle" class="h5 mb-0">Participação</h3>
+      <button onclick="closeModal()" class="close-btn">&times;</button>
+    </div>
+    <div class="modal-body-custom">
+      <canvas id="participationChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+  let myChart = null;
+
+  document.querySelectorAll('.chart-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const name = btn.dataset.chartName;
+      const rawData = JSON.parse(btn.dataset.chartData);
+      
+      openModal(name, rawData);
+    });
+  });
+
+  function openModal(name, data) {
+    document.getElementById('modalTitle').innerText = `Participação: ${name}`;
+    document.getElementById('chartModal').style.display = 'flex';
+    
+    const ctx = document.getElementById('participationChart').getContext('2d');
+    
+    if (myChart) {
+      myChart.destroy();
+    }
+
+    myChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: data.map(d => d.label),
+        datasets: [{
+          data: data.map(d => d.value),
+          backgroundColor: [
+            '#003641', '#820AD1', '#2b8a3e', '#c92a2a', '#1864ab', 
+            '#f59f00', '#74b816', '#0ca678', '#1098ad', '#1c7ed6', 
+            '#4263eb', '#7048e8', '#ae3ec9', '#d6336c', '#f03e3e'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.label || '';
+                if (label) { label += ': '; }
+                if (context.parsed !== null) {
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = ((context.parsed / total) * 100).toFixed(1);
+                  label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed);
+                  label += ` (${percentage}%)`;
+                }
+                return label;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function closeModal() {
+    document.getElementById('chartModal').style.display = 'none';
+  }
+
+  // Close modal when clicking outside
+  window.onclick = function(event) {
+    const modal = document.getElementById('chartModal');
+    if (event.target == modal) {
+      closeModal();
+    }
+  }
+</script>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+  /* Modal Styles */
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  .modal-content-custom {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
+  .modal-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+  }
+  .close-btn:hover { color: #000; }
 
   .premium-report {
     font-family: 'Inter', sans-serif;
