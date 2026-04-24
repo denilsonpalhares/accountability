@@ -13,7 +13,7 @@ mappings:
       positive_is: "DEBIT"
       negative_is: "CREDIT"
 
-  - pattern: "cartaosicoob_*.pdf"
+  - pattern: "*cartao_sicoob*.*"
     account_alias: "cartao_sicoob"
     description: "Fatura de Cartão de Crédito Sicoob"
     # Em uma conta de PASSIVO (como cartao_sicoob):
@@ -29,3 +29,30 @@ mappings:
     rules:
       positive_is: "DEBIT"
       negative_is: "CREDIT"
+
+description_mappings:
+  energia: "DÉB.CNV.EN.ELET.GAS"
+  internet: "DÉB.CONV.TELECOMUN."
+  agua: "DÉB.CONV.SANEAMENTO"
+  netflix: "Netflix"
+  nubank: "Pagamento Pix | ***.414.176-** | DOC.: Pix"
+  acsiv: "ACSIV SISTEMAS LTDA"
+  impostos: "DÉB.CONV.PREFEITURA"
+  caixa_geral: "DÉB.SAQUE INTERCRED"
+  carro: "DÉB. CONV. SEGUROS"
+  maracuja: "COMERCIAL SOARES E FILHO LTDA"
+  celular: "09.614.276 0001-34"
+  vinicius: "Pagamento Pix | ***.168.016-**"
+  salario_alfenas: "CONFECCOES RICARDO VIEGAS LTDA"
+  fillipe: "***.447.126-**"
+  sff: "26.745.518 0001-48"
+  banco:
+    - "ASSOC INT CAP PARC"
+    - "DEB.PARC.SUBS/INTEGRAL"
+  salario_lavras: "CONFECCOES VIEGAS LTDA"
+  salario_ouro_branco: "CPF: 038.990.346-94"
+  denilson_pessoal: "***.288.476-**"
+  casa: "Casa"
+  salario_nova_serrana: "066.427.766-74"
+  salario_lafaiete2: "153.651.786-02"
+  desconhecido: "09.376.495 0001-22"
